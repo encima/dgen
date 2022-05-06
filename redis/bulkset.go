@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"github.com/encima/dgen/lib"
 	rds "github.com/go-redis/redis/v8"
 	"github.com/joho/godotenv"
 	"github.com/twinj/uuid"
@@ -27,7 +28,8 @@ func main() {
 	err := godotenv.Load()
 	runtime.GOMAXPROCS(16)
 	redisURI := os.Getenv("SVC_URI")
-
+	pp := lib.PromPull{URI: os.Getenv("PROM_URI"), USER: os.Getenv("PROM_USER"), PASS: os.Getenv("PROM_PASS")}
+	pp.Pull()
 	addr, err := rds.ParseURL(redisURI)
 	if err != nil {
 		panic(err)

@@ -2,9 +2,9 @@ package lib
 
 import (
 	"crypto/tls"
-	"fmt"
-	"io/ioutil"
 	"net/http"
+
+	"github.com/prometheus/common/expfmt"
 )
 
 type PromPull struct {
@@ -13,7 +13,7 @@ type PromPull struct {
 	PASS string
 }
 
-func (pp *PromPull) Pull() {
+func (pp *PromPull) Pull(metric string) float64 {
 
 	req, err := http.NewRequest("GET", pp.URI, nil)
 	req.SetBasicAuth(pp.USER, pp.PASS)
@@ -25,7 +25,13 @@ func (pp *PromPull) Pull() {
 	if err != nil {
 		panic(err)
 	}
-	body, _ := ioutil.ReadAll(resp.Body)
-	fmt.Println(string(body))
+	// body, _ := ioutil.ReadAll(resp.Body)
+	var parser expfmt.TextParser
+	prom, _ := parser.TextToMetricFamilies(resp.Body)
+	found := prom[metric]
+	if found != nil {
+		return prom[metric].Metric[0].GetGauge().GetValue()
+	}
+	return -1
 
 }
