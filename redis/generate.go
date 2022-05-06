@@ -3,7 +3,6 @@ package main
 import (
 	"bytes"
 	"flag"
-	"fmt"
 	"github.com/encima/dgen/lib"
 	"github.com/joho/godotenv"
 	"log"

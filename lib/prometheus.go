@@ -2,9 +2,8 @@ package lib
 
 import (
 	"crypto/tls"
-	"net/http"
-
 	"github.com/prometheus/common/expfmt"
+	"net/http"
 )
 
 type PromPull struct {

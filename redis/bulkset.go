@@ -3,12 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
+	"runtime"
+
 	"github.com/encima/dgen/lib"
 	rds "github.com/go-redis/redis/v8"
 	"github.com/joho/godotenv"
 	"github.com/twinj/uuid"
-	"os"
-	"runtime"
 )
 
 var ctx = context.Background()
@@ -34,14 +35,13 @@ func main() {
 		panic(err)
 	}
 	rdb := rds.NewClient(addr)
-	fmt.Println("connected")
+	defer rdb.Close()
 	for {
-		disk := pp.Pull("disk_used_percent")
-		if disk > 80 {
+		free := pp.Pull("mem_used")
+		fmt.Println(free)
+		if free > 800000 {
 			break
 		}
 		massImport(rdb)
-		fmt.Println("uuids inserted")
 	}
-	rdb.Close()
 }
