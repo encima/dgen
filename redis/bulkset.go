@@ -29,15 +29,19 @@ func main() {
 	runtime.GOMAXPROCS(16)
 	redisURI := os.Getenv("SVC_URI")
 	pp := lib.PromPull{URI: os.Getenv("PROM_URI"), USER: os.Getenv("PROM_USER"), PASS: os.Getenv("PROM_PASS")}
-	pp.Pull()
 	addr, err := rds.ParseURL(redisURI)
 	if err != nil {
 		panic(err)
 	}
 	rdb := rds.NewClient(addr)
 	fmt.Println("connected")
-
-	massImport(rdb)
-	fmt.Println("uuids inserted")
+	for {
+		disk := pp.Pull("disk_used_percent")
+		if disk > 80 {
+			break
+		}
+		massImport(rdb)
+		fmt.Println("uuids inserted")
+	}
 	rdb.Close()
 }

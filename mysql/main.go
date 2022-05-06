@@ -50,7 +50,7 @@ func main() {
 	}
 	for {
 		disk := pp.Pull("disk_used_percent")
-		if disk > os.Getenv("DISK_THRESHOLD") {
+		if disk > 80 {
 			break
 		}
 		stmtOut, err := db.Prepare("CALL InsertRand(6000);")
